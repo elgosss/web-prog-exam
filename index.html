@@ -113,7 +113,7 @@
                         </div>
 
                         <div id="tab_feedback" class="tabs_block">
-                            <form action="sender.php" method="post" id="feedback">
+                            <form id="feedback">
                                 <div>
                                     <img src="fbCorgi.gif" width="239.2px" style="margin-bottom: 20px; border-radius: 50%;" alt="">
                                 </div>
@@ -300,8 +300,16 @@
             }
 
             //ОБРАТНАЯ СВЯЗЬ
-            jQuery('#feedback').click(function() {
-                var form = jQuery(this).closest('form');
+            $('#feedback').click(function() {
+
+                $.ajax({
+                    type:'POST',
+                    url: 'sender.php',
+                    data: $(this).serialize()
+                });
+                return false;
+
+                /*var form = jQuery(this).closest('form');
                 
                 var actUrl = form.attr('action');
 
@@ -316,7 +324,7 @@
                     error:	 function() {
                         form.find('#fb_status').html('серверная ошибка');
                     }
-                });
+                });*/
             });
         </script>
     </body>

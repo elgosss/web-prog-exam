@@ -1,14 +1,11 @@
 <?php
-    $name = $_POST['fb_name'];
-    $surname = $_POST['fb_surname'];
-	$phone = $_POST['fb_phone'];
-    $email = $_POST['fb_email'];
-    $text = $_POST['fb_text'];
+    $name = trim($_POST['fb_name']);
+    $surname = trim($_POST['fb_surname']);
+	$phone = trim($_POST['fb_phone']);
+    $email = trim($_POST['fb_email']);
+    $text = trim($_POST['fb_text']);
 
 	$to = "e.s.gorohova@gmail.com"; 
-	$date = date ("d.m.Y"); 
-	$time = date ("h:i");
-	$from = $email;
 	$subject = "Обратная связь";
 
 	$msg="
@@ -17,7 +14,5 @@
     Телефон: $phone /n
     Адрес эл. почты: $email /n
     Сообщение: $text"; 	
-	mail($to, $subject, $msg, "From: $from ");
+	mail($to, $subject, $msg, "Content-type: text/plain; charset=\"utf-8\"\n From: $to");
 ?>
-
-<p>Привет, форма отправлена</p>
