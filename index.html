@@ -131,7 +131,7 @@
                                 
                                 <textarea name="fb_text" id="fb_text" placeholder="Введите текст"></textarea>
 
-                                <button type="button" id="fb_form">Отправить</button>
+                                <button type="button" id="fb_btn">Отправить</button>
                                 <div id="fb_status"></div>
                             </form>
                         </div>
@@ -300,7 +300,7 @@
             }
 
             //ОБРАТНАЯ СВЯЗЬ
-            $('#feedback').click(function() {
+            $('#feedback').submit(function() {
 
                 $.ajax({
                     type:'POST',
