@@ -1,10 +1,10 @@
 <?php
     if (isset($_POST['submit'])) {
-        $name = trim($_POST['fb_name']);
-        $surname = trim($_POST['fb_surname']);
-        $phone = trim($_POST['fb_phone']);
-        $email = trim($_POST['fb_email']);
-        $text = trim($_POST['fb_text']);
+        $name = $_POST['fb_name'];
+        $surname = $_POST['fb_surname'];
+        $phone = $_POST['fb_phone'];
+        $email = $_POST['fb_email'];
+        $text = $_POST['fb_text'];
 
         $to = "e.s.gorohova@gmail.com"; 
         $subject = "Обратная связь";
