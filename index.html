@@ -136,7 +136,7 @@
                                 <img src="theEnd.png" width="239.2px" style="margin-bottom: 20px;" alt="">
                                 Тест завершен!
                                 <div id="test_score" style="margin-top: 20px;">Вы набрали 10 баллов</div>
-                                <button id="test_restart"><a href="/" style="text-decoration: none; color: white">Начать заново</a></button>
+                                <button id="test_restart">Начать заново</button>
                             </div>
                         </div>
 
@@ -428,6 +428,16 @@
                 } else {
                     alert('Вы ничего не выбрали!');
                 }
+            })
+
+            $('#test_restart').on('click', function() {
+                $('#test_result').addClass('hidden');
+                test.removeClass('hidden');
+
+                count = 0;
+                userScore = 0;
+            
+                showQuestions(count);
             })
 
             // ГЛАВНАЯ
