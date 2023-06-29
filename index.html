@@ -24,7 +24,14 @@
                     </nav>
                     <div class="tabs_body">
                         <div id="tab_main" class="tabs_block">
-                            Главная
+                            <section class="layers">
+                                <div class="layers_container">
+                                    <div class="layers_item layer-1" style="background-image: url(scene.jpg);"></div>
+                                    <div class="layers_item layer-2" style="font-weight: 900; font-size: 60px;">АТМОСФЕРНОЕ ДАВЛЕНИЕ</div>
+                                    <div class="layers_item layer-3" style="background-image: url(layer-4.png);"></div>
+                                    <div class="layers_item layer-4" style="background-image: url(layer-5.png);"></div>
+                                </div>
+                            </section>
                         </div>
 
                         <div id="tab_tasks" class="tabs_block">
@@ -109,7 +116,28 @@
                         </div>
 
                         <div id="tab_test" class="tabs_block">
-                            Тест
+                            <div id="test">
+                                <div id="test_progress">
+                                    <div class="test_progress_inner"></div>
+                                </div>
+                                <div id="test_question">Вопрос</div>
+                                <ul id="test_options">
+                                    <li class="test_option">1</li>
+                                    <li class="test_option">2</li>
+                                    <li class="test_option">3</li>
+                                    <li class="test_option">4</li>
+                                </ul>
+                                <div id="test_bottom">
+                                    <div id="test_page" style="margin-top: 30px;">0 / 10</div>
+                                    <button id="test_next_btn">Следующий</button>
+                                </div>
+                            </div>
+                            <div id="test_result" class="hidden">
+                                <img src="theEnd.png" width="239.2px" style="margin-bottom: 20px;" alt="">
+                                Тест завершен!
+                                <div id="test_score" style="margin-top: 20px;">Вы набрали 10 баллов</div>
+                                <button id="test_restart"><a href="/" style="text-decoration: none; color: white">Начать заново</a></button>
+                            </div>
                         </div>
 
                         <div id="tab_feedback" class="tabs_block">
@@ -186,8 +214,12 @@
             </div>
         </div>
         
+        <script src="questions.js"></script>
+        <script src="rain.js"></script>
         <script>
-            //ЗАДАЧИ
+            "use strict";
+            
+            // ЗАДАЧИ
             $('.decision_accordion').each((key, el) => {
                 el.addEventListener('click', () => {
                     let decision = el.nextElementSibling;
@@ -200,7 +232,7 @@
                 })
             });
 
-            //РЕГ
+            // РЕГ
             var arr_users = JSON.parse(localStorage.getItem('users'));
             if (arr_users == null) arr_users = [];
 
@@ -266,7 +298,7 @@
                 console.log(storage_users);
             }
             
-            //ВХОД
+            // ВХОД
             function login(e) {
                 event.preventDefault();
 
@@ -299,22 +331,22 @@
                 }
             }
 
-            //ОБРАТНАЯ СВЯЗЬ
+            // ОБРАТНАЯ СВЯЗЬ
             $('#fb_form').click(function() {
 
-                $.ajax({
+                /*$.ajax({
                     type:'POST',
                     url: 'sender.php',
                     data: $(this).serialize()
                 });
-                return false;
+                return false;*/
 
-                /*var form = jQuery(this).closest('form');
+                //var form = jQuery(this).closest('form');
                 
-                var actUrl = form.attr('action');
+                //var actUrl = form.attr('action');
 
                 jQuery.ajax({
-                    url: actUrl,
+                    url: 'sender.php',
                     type: 'post',
                     dataType: 'html',
                     data: form.serialize(),
@@ -324,8 +356,89 @@
                     error:	 function() {
                         form.find('#fb_status').html('серверная ошибка');
                     }
-                });*/
+                });
             });
+
+            // ТЕСТ
+            var test = $('#test');
+            
+            let count = 0,  // вопрос в списке
+                userScore = 0;  // правильные ответы пользователя
+            
+            showQuestions(count);
+            
+            function showQuestions(index) {
+                var test_question = $('#test_question'),
+                    test_options = $('#test_options'),
+                    test_page = $('#test_page'),
+                    test_progress = $('.test_progress_inner');
+
+                test_question.html(questions[index].question);
+
+                test_options.html('');
+                questions[index].options.forEach(el => {
+                    test_options.append(`<li class="test_option">${el}</li>`)
+                });
+
+                $('.test_option').each((key, el) => el.setAttribute('onclick', 'optionSelected(this)'));
+
+                test_page.html(`${index + 1} / ${questions.length}`);
+
+                test_progress.css('width', `${Math.round(((index + 1) / questions.length) * 100)}%`);
+            }
+
+            function optionSelected(answer) {
+                var userAnswer = answer.textContent,
+                    correctAnswer = questions[count].answer,
+                    test_option = $('.test_option');
+                
+                if (userAnswer == correctAnswer) {
+                    userScore++;
+                    answer.classList.add('option_right');
+                } else {
+                    answer.classList.add('option_wrong');
+
+                    test_option.each((key, el) => {
+                        if (el.textContent == correctAnswer) {
+                            setTimeout(() => {
+                                el.classList.add('option_right');
+                            }, 200);
+                        }
+                    });
+                }
+
+                test_option.each((key, el) => el.classList.add('option_disabled'));
+            }
+
+            $('#test_next_btn').on('click', function() {
+                var test_option = $('.test_option'),
+                    test_result = $('#test_result'),
+                    test_score = $('#test_score');
+
+                if ((count + 1) == questions.length && test_option.hasClass('option_disabled')) {
+                    test_result.removeClass('hidden');
+                    test.addClass('hidden');
+                    test_score.html(`Вы набрали ${userScore} из ${questions.length} баллов`);
+                    return;
+                }
+
+                if (test_option.hasClass('option_disabled')) {
+                    count++;
+                    showQuestions(count);
+                } else {
+                    alert('Вы ничего не выбрали!');
+                }
+            })
+
+            // ГЛАВНАЯ
+            document.addEventListener('mousemove', e => {
+                Object.assign(document.documentElement, {
+                    style: `
+                    --moveX: ${(e.clientX - window.innerWidth / 2) * - 0.005}deg;
+                    --moveY: ${(e.clientY - window.innerWidth / 2) * - 0.01}deg;
+                    `
+                })
+            })
         </script>
     </body>
 </html>
