@@ -130,6 +130,8 @@
                             <div id="model_result">
                                 <div id="model_l"></div><br>
                                 <button id="model_btn" class="hidden">Рассчитать</button>
+                                <input type="text" name="model_answer" id="model_answer" class="hidden"><br>
+                                <button id="model_btn_result" class="hidden">Проверить</button>
                             </div>
                         </div>
 
@@ -475,6 +477,7 @@
 
             // МОДЕЛЬ
             var one = true;
+            var two = true;
             document.addEventListener('keydown', el => {
                 var tube_r_model = $('#tube_r_model'),
                     tube_l_model = $('#tube_l_model'),
@@ -489,31 +492,46 @@
                         top_glass_tube = parseFloat(glass_tube_model.position().top)
 
                     var l = (top_water_l - top_glass_tube) / 2.75 / 100;    // 110px = 40см
-                    $('#model_l').html(`l = ${l.toFixed(4)} м.`);
+                    $('#model_l').html(`Первоначальная длина l столба воздуха в трубке = ${l.toFixed(4)} м.`);
 
                     $('#model_btn').removeClass('hidden');
                 };
 
                 $('#model_btn').on('click', function() {
+                    $('#model_btn').addClass('hidden');
                     var del_l = (parseFloat(water_l_model.position().top) - top_water_l) / 2.75 / 100;
                     if (!isNaN(del_l)) {
-                        $('#model_l').append(`<br>Δl =  ${del_l.toFixed(4)} м.`);
+                        $('#model_l').append(`<br>Δ l =  ${del_l.toFixed(4)} м.`);
                         var del_l_plus_l = del_l + l;
                     };
                     if (one) {
                         var h = (parseFloat(water_r_model.position().top) - parseFloat(tube_l_model.position().top)) / 60 + del_l;
-                        $('#model_l').append(`<br>h =  ${h.toFixed(4)} м.`);    // 60px = 1m
+                        $('#model_l').append(`<br>Разность h высот уровней воды в трубке и воронке =  ${h.toFixed(4)} м.`);    // 60px = 1m
 
                         var ρ = 1000,
                             g = 9.81;
 
-                        var p = ρ * g * h * del_l_plus_l / del_l;
-
+                        var p = Math.round(ρ * g * h * del_l_plus_l / del_l);
+                        $('#model_l').append(`<br><br>Введите атмосферное давление в паскалях:<br>`);
+                        $('#model_answer').removeClass('hidden');
+                        $('#model_btn_result').removeClass('hidden');
                         one = false;
-                    }
-                    
+                    };
+
+                    $('#model_btn_result').on('click', function() {
+                        if (two) {
+                            if ($('#model_answer').val() == p) {
+                                $('#model_l').html(`Ответ правильный!`);
+                            } else {
+                                $('#model_l').html(`Ответ неправильный! <br> Правильный ответ: ${p} Па`);
+                            };
+                            two = false;
+                            $('#model_btn_result').addClass('hidden');
+                            $('#model_answer').addClass('hidden');
+                        };
+                    });
                 });
-                
+
                 switch(el.keyCode) {
                     case 40: {  // стрелка вниз
                         if (water_l_model.height() > 0) {
