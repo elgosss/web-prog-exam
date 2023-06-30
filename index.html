@@ -104,11 +104,33 @@
                         </div>
 
                         <div id="tab_animation" class="tabs_block">
-                            Анимация
+                            <div id="tube_animation" class="tube">
+                                <div id="stopper_animation" class="stopper"></div>
+                                <div id="glass_tube_animation" class="glass_tube"></div>
+                                <div id="funnel_animation" class="funnel"></div>
+                                <div id="tube_r_animation" class="tube_r"></div>
+                                <div id="tube_bottom_animation" class="tube_bottom"></div>
+                                <div id="tube_l_animation" class="tube_l"></div>
+                                <div id="water_l_animation" class="water_l"></div>
+                                <div id="water_r_animation" class="water_r"></div>
+                            </div>
                         </div>
 
                         <div id="tab_model" class="tabs_block">
-                            Модель
+                            <div id="tube_model" class="tube">
+                                <div id="stopper_model" class="stopper"></div>
+                                <div id="glass_tube_model" class="glass_tube"></div>
+                                <div id="funnel_model" class="funnel"></div>
+                                <div id="tube_r_model" class="tube_r"></div>
+                                <div id="tube_bottom_model" class="tube_bottom"></div>
+                                <div id="tube_l_model" class="tube_l"></div>
+                                <div id="water_l_model" class="water_l"></div>
+                                <div id="water_r_model" class="water_r"></div>
+                            </div>
+                            <div id="model_result">
+                                <div id="model_l"></div><br>
+                                <button id="model_btn" class="hidden">Рассчитать</button>
+                            </div>
                         </div>
 
                         <div id="tab_video" class="tabs_block">
@@ -215,7 +237,6 @@
         </div>
         
         <script src="questions.js"></script>
-        <script src="rain.js"></script>
         <script>
             "use strict";
             
@@ -334,29 +355,31 @@
             // ОБРАТНАЯ СВЯЗЬ
             $('#fb_form').click(function() {
 
-                /*$.ajax({
+                $.ajax({
                     type:'POST',
                     url: 'sender.php',
                     data: $(this).serialize()
+                }).done(function() {
+                    $('#fb_form').html('Форма успешно отправлена!');
                 });
-                return false;*/
+                return false;
 
                 //var form = jQuery(this).closest('form');
                 
                 //var actUrl = form.attr('action');
 
-                jQuery.ajax({
-                    url: 'sender.php',
-                    type: 'post',
-                    dataType: 'html',
-                    data: form.serialize(),
-                    success: function(data) {
-                        form.find('#fb_status').html('форма отправлена успешно');
-                    },
-                    error:	 function() {
-                        form.find('#fb_status').html('серверная ошибка');
-                    }
-                });
+                // jQuery.ajax({
+                //     url: 'sender.php',
+                //     type: 'post',
+                //     dataType: 'html',
+                //     data: form.serialize(),
+                //     success: function(data) {
+                //         form.find('#fb_status').html('форма отправлена успешно');
+                //     },
+                //     error:	 function() {
+                //         form.find('#fb_status').html('серверная ошибка');
+                //     }
+                // });
             });
 
             // ТЕСТ
@@ -449,6 +472,91 @@
                     `
                 })
             })
+
+            // МОДЕЛЬ
+            var one = true;
+            document.addEventListener('keydown', el => {
+                var tube_r_model = $('#tube_r_model'),
+                    tube_l_model = $('#tube_l_model'),
+                    funnel_model = $('#funnel_model'),
+                    water_r_model = $('#water_r_model'),
+                    water_l_model = $('#water_l_model'),
+                    tube_bottom_model = $('#tube_bottom_model'),
+                    glass_tube_model = $('#glass_tube_model');
+                
+                if ($('#model_l').html() == '') {
+                    var top_water_l = parseFloat(water_l_model.position().top),
+                        top_glass_tube = parseFloat(glass_tube_model.position().top)
+
+                    var l = (top_water_l - top_glass_tube) / 2.75 / 100;    // 110px = 40см
+                    $('#model_l').html(`l = ${l.toFixed(4)} м.`);
+
+                    $('#model_btn').removeClass('hidden');
+                };
+
+                $('#model_btn').on('click', function() {
+                    var del_l = (parseFloat(water_l_model.position().top) - top_water_l) / 2.75 / 100;
+                    if (!isNaN(del_l)) {
+                        $('#model_l').append(`<br>Δl =  ${del_l.toFixed(4)} м.`);
+                        var del_l_plus_l = del_l + l;
+                    };
+                    if (one) {
+                        var h = (parseFloat(water_r_model.position().top) - parseFloat(tube_l_model.position().top)) / 60 + del_l;
+                        $('#model_l').append(`<br>h =  ${h.toFixed(4)} м.`);    // 60px = 1m
+
+                        var ρ = 1000,
+                            g = 9.81;
+
+                        var p = ρ * g * h * del_l_plus_l / del_l;
+
+                        one = false;
+                    }
+                    
+                });
+                
+                switch(el.keyCode) {
+                    case 40: {  // стрелка вниз
+                        if (water_l_model.height() > 0) {
+
+                            tube_r_model.animate({top: '+=6'}, 10);
+                            tube_r_model.animate({height: '-=3.5'}, 10);
+
+                            funnel_model.animate({top: '+=6'}, 10);
+
+                            water_r_model.animate({top: '+=6'}, 10);
+
+                            tube_bottom_model.animate({top: '+=2.5'}, 10);
+
+                            tube_l_model.animate({height: '+=2.5'}, 10);
+
+                            water_l_model.animate({top: '+=1.5'}, 10);
+                            water_l_model.animate({height: '-=1.5'}, 10);
+                        }
+                        break;
+                    }
+                    case 38: {  // стрелка вверх
+                        if (funnel_model.position().top > 0) {
+
+                            tube_r_model.animate({top: '-=6'}, 10);
+                            tube_r_model.animate({height: '+=3.5'}, 10);
+
+                            funnel_model.animate({top: '-=6'}, 10);
+
+                            water_r_model.animate({top: '-=6'}, 10);
+
+                            tube_bottom_model.animate({top: '-=2.5'}, 10);
+
+                            tube_l_model.animate({height: '-=2.5'}, 10);
+
+                            water_l_model.animate({top: '-=1.5'}, 10);
+                            water_l_model.animate({height: '+=1.5'}, 10); 
+                        }
+                        break;
+                    }
+                    default: break;
+                }
+            });
+            
         </script>
     </body>
 </html>

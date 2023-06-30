@@ -14,5 +14,5 @@
     Телефон: $phone /n
     Адрес эл. почты: $email /n
     Сообщение: $text"; 	
-	mail($to, $subject, $msg, "Content-type: text/plain; charset=\"utf-8\"\n From: $to");
+	mail($to, $subject, $msg, "From: $to");
 ?>
